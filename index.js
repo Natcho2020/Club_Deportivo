@@ -70,10 +70,23 @@ app.get("/editar", (req, res) => {
         })
 })
 app.get("/eliminar", (req, res) => {
+    const { nombre } = req.query
+
     fs.readFile("./data/deportes.json", "utf-8")
         .then(data => {
             const datosJson = JSON.parse(data)
 
-            res.send(JSON.stringify(datosJson))
+            const deportesFiltrados = datosJson.deportes.filter(d => {
+                return d.nombre !== nombre
+            })
+
+            datosJson.deportes = deportesFiltrados
+
+            fs.writeFile("./data/deportes.json", JSON.stringify(datosJson))
+                .then(() => {
+                    console.log("Deporte Eliminado")
+                    res.send(datosJson);
+                })
         })
 })
+
